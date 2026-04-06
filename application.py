@@ -1,9 +1,9 @@
 class JobApplication:
-
-    def __init__(self, company, position, status):
+    def __init__(self, company, role, status, date):
         self.company = company
-        self.position = position
+        self.role = role
         self.status = status
+        self.date = date
 
     def __str__(self):
-        return f"{self.company} - {self.position} ({self.status})"
+        return f"{self.company} | {self.role} | {self.status} | {self.date}"

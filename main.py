@@ -1,61 +1,75 @@
-from db import Database
-from application import JobApplication
+from db import Database, add_application, get_applications, update_status
+from factory import ApplicationFactory
+from command import AddApplicationCommand, UpdateStatusCommand
+from state import ApplicationState
 from api_service import get_company_info
 import json
 
 
-def add_application(conn, application):
-
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "INSERT INTO job_applications (company, position, status) VALUES (%s,%s,%s)",
-        (application.company, application.position, application.status)
-    )
-
-    conn.commit()
-    cursor.close()
-
-
-def show_applications(conn):
-
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM job_applications")
-
-    rows = cursor.fetchall()
-
-    for row in rows:
-        print(row)
-
-    cursor.close()
-
+def menu():
+    print("\n--- ApplyIt ---")
+    print("1. Add Application")
+    print("2. View Applications")
+    print("3. Update Status")
+    print("4. Fetch Company Info")
+    print("5. Exit")
 
 
 def main():
-
     db = Database()
     conn = db.get_connection()
 
-    app = JobApplication("Google", "Software Engineer", "Applied")
+    while True:
+        menu()
+        choice = input("Enter choice: ")
 
-    add_application(conn, app)
+        if choice == "1":
+            company = input("Company: ")
+            position = input("Position: ")
+            status = input("Status: ")
 
-    print("Applications in database:")
+            app = ApplicationFactory.create_application(company, position, status)
 
-    show_applications(conn)
+            command = AddApplicationCommand(lambda a: add_application(conn, a), app)
+            command.execute()
 
-    print("\nFetching company info...\n")
+            print("Application added!")
 
-    data = get_company_info("Google")
+        elif choice == "2":
+            apps = get_applications(conn)
+            print("\nApplications:")
+            for app in apps:
+                print(app)
 
-    print("Raw API Response:")
-    print(data)
+        elif choice == "3":
+            app_id = input("Application ID: ")
+            new_status = input("New Status: ")
 
-    print("\nFormatted Response:")
-    print(json.dumps(data, indent=2))
+            state = ApplicationState("old")
+            state.change_status(new_status)
 
-    
+            command = UpdateStatusCommand(
+                lambda i, s: update_status(conn, i, s),
+                app_id,
+                new_status
+            )
+            command.execute()
+
+            print("Status updated!")
+
+        elif choice == "4":
+            name = input("Enter company name: ")
+            data = get_company_info(name)
+
+            print("\nCompany Info:")
+            print(json.dumps(data, indent=2))
+
+        elif choice == "5":
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice")
 
 
 if __name__ == "__main__":

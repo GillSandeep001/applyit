@@ -1,0 +1,7 @@
+def get_company_info(name):
+    # Safe mock API
+    return {
+        "company": name,
+        "industry": "Technology",
+        "info": "This is sample company data from API"
+    }
