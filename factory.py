@@ -2,5 +2,5 @@ from application import JobApplication
 
 class ApplicationFactory:
     @staticmethod
-    def create_application(company, position, status):
-        return JobApplication(company, position, status)
+    def create_application(company, position, status, date):
+        return JobApplication(company, position, status, date)

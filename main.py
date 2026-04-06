@@ -27,9 +27,11 @@ def main():
             company = input("Company: ")
             position = input("Position: ")
             status = input("Status: ")
+            date = input("Date (YYYY-MM-DD): ")
 
-            app = ApplicationFactory.create_application(company, position, status)
+            app = ApplicationFactory.create_application(company, position, status, date)
 
+            
             command = AddApplicationCommand(lambda a: add_application(conn, a), app)
             command.execute()
 
