@@ -3,6 +3,7 @@ from factory import ApplicationFactory
 from command import AddApplicationCommand, UpdateStatusCommand
 from state import ApplicationState
 from api_service import get_company_info
+from db import generate_report
 import json
 
 
@@ -12,7 +13,10 @@ def menu():
     print("2. View Applications")
     print("3. Update Status")
     print("4. Fetch Company Info")
-    print("5. Exit")
+    print("5. Generate Report")
+    print("6. Exit")
+
+    
 
 
 def main():
@@ -64,9 +68,22 @@ def main():
             data = get_company_info(name)
 
             print("\nCompany Info:")
-            print(json.dumps(data, indent=2))
-
+            if isinstance(data, list) and len(data) > 0:
+                 print("Company:", data[0].get("name"))
+                 print("Logo URL:", data[0].get("image"))
+            else:
+                print("No data found")
         elif choice == "5":
+            total, status_counts = generate_report(conn)
+
+            print("\n--- Job Application Report ---")
+            print(f"Total Applications: {total}")
+
+            print("\nApplications by Status:")
+            for status, count in status_counts:
+                 print(f"{status}: {count}")
+            print("\n--- End of Report ---")     
+        elif choice == "6":
             print("Exiting...")
             break
 

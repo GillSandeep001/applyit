@@ -1,5 +1,12 @@
 import psycopg2
+import os
 
+import dotenv
+
+dotenv.load_dotenv()
+
+
+  
 class Database:
 
     def __init__(self):
@@ -7,7 +14,7 @@ class Database:
             host="localhost",
             database="applyit",
             user="postgres",
-            password="GillSaab683"
+            password = os.getenv("DB_PASSWORD")
         )
 
     def get_connection(self):
@@ -40,3 +47,22 @@ def update_status(conn, app_id, status):
     )
     conn.commit()
     cursor.close()
+
+def generate_report(conn):
+    cursor = conn.cursor()
+
+    # Total applications
+    cursor.execute("SELECT COUNT(*) FROM job_applications")
+    total = cursor.fetchone()[0]
+
+    # Count by status
+    cursor.execute("""
+        SELECT status, COUNT(*)
+        FROM job_applications
+        GROUP BY status
+    """)
+    status_counts = cursor.fetchall()
+
+    cursor.close()
+
+    return total, status_counts
