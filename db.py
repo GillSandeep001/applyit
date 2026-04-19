@@ -17,11 +17,20 @@ class Database:
     def __init__(self):
         # Establish connection to PostgreSQL database
         self.connection = psycopg2.connect(
-            host="localhost",
-            database="applyit",
+            host="db.jgknprgoukitelfcclgz.supabase.co",
+            database="postgres",
             user="postgres",
-            password=os.getenv("DB_PASSWORD")  # Securely load password from environment variable
-        )
+            password=os.getenv("DB_PASSWORD"),
+            port="5432"
+)
+        
+        
+        # self.connection = psycopg2.connect(
+        #     host="localhost",
+        #     database="applyit",
+        #     user="postgres",
+        #     password=os.getenv("DB_PASSWORD")  # Securely load password from environment variable
+        # )
 
     def get_connection(self):
         """
@@ -114,4 +123,4 @@ def generate_report(conn):
 
     cursor.close()
 
-    return total, status_counts
+    return total, status_counts    
